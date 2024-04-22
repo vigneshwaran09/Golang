@@ -1,2 +1,2 @@
 # Golang
-This Repo hold about Golang concepts
+This Repo holds all about Golang concepts.
