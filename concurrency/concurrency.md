@@ -128,18 +128,7 @@ func goodbye() {
 }
 
 ```
-
-In this example, first, the `main` goroutine starts. Then it invokes the `helloworld()` function, and the `helloworld` goroutine starts.
-
-After the `helloworld`  goroutine finishes its operation, the `main` goroutine waits for 1 second and invokes the `goodbye()` function.
-
-If you omit the `time` function in main, then it will exit before the `helloworld()` finishes its execution.
-
-Let's understand the steps involved here:
-
-1. `main` goroutine starts
-2. Invokes `helloworld` and `helloworld` goroutine starts
-3. If there is no pause using the sleep method, the `main` will then invoke `goodbye()` and exit before the `helloworld` goroutine finishes its execution.
+![](diagrams/sleep.drawio.svg)
 
 After adding time.Sleep(), the `helloworld` goroutine is able to finish its execution before main exits:
 
@@ -149,129 +138,11 @@ Hello World!
 Good Bye!
 
 ```
+- But this way is not a proper way for sync our goroutine with main goroutine because we couldn't tell accurate processing time for all goroutine function in time.Sleep,some will take too long or some will take too small.
 
 ### What are WaitGroups?
 
 You can use WaitGroups to wait for multiple goroutines to finish. A WaitGroup blocks the execution of a function until its internal counter becomes 0.
-
-Let's see a simple code snippet:
-
-```
-package main
-
-import (
-	"fmt"
-)
-
-func main() {
-	go helloworld()
-	go goodbye()
-}
-
-func helloworld() {
-	fmt.Println("Hello World!")
-}
-
-func goodbye() {
-	fmt.Println("Good Bye!")
-}
-
-```
-
-Output
-
-```
-$ go run HelloWorld.go
-
-$
-
-```
-
-If we run the above program, it doesn't print anything. This is because the main function got terminated as soon as those two goroutines started executing. So, we can use `Sleep` which pauses the execution of the main function. It looks like this:
-
-```
-package main
-
-import (
-	"fmt"
-	"time"
-)
-
-func main() {
-	go helloworld()
-	go goodbye()
-	time.Sleep(2 * time.Second)
-}
-
-func helloworld() {
-	fmt.Println("Hello World!")
-}
-
-func goodbye() {
-	fmt.Println("Good Bye!")
-}
-
-```
-
-Here's the output:
-
-```
-$ go run HelloWorld.go
-Good Bye!
-Hello World!
-
-```
-
-Here, the `main` function was blocked for 2 seconds and all the goroutines were executed successfully.
-
-Blocking the method for 2 seconds might not create any problems. But at the production level, where each millisecond is vital, millions of concurrent requests can create a huge problem.
-
-You can solve this problem using **sync.WaitGroup** like this:
-
-```
-package main
-
-import (
-	"fmt"
-	"sync"
-)
-
-func main() {
-	var wg sync.WaitGroup
-	wg.Add(2)
-	go helloworld(&wg)
-	go goodbye(&wg)
-	wg.Wait()
-}
-
-func helloworld(wg *sync.WaitGroup) {
-	defer wg.Done()
-	fmt.Println("Hello World!")
-}
-
-func goodbye(wg *sync.WaitGroup) {
-	defer wg.Done()
-	fmt.Println("Good Bye!")
-}
-
-```
-
-Output
-
-```
-$ go run HelloWorld.go
-Good Bye!
-Hello World!
-
-```
-
-The output is the same as the previous one, but it doesn't block the `main` for 2 seconds.
-
-1. `wg.Add(int)`: This method indicates the number of goroutines to wait. In the above code, I have provided 2 for 2 different goroutines. Hence the internal counter wait becomes 2.
-2. `wg.Wait()`: This method blocks the execution of code until the internal counter becomes 0.
-3. `wg.Done()`: This will reduce the internal counter value by 1.
-
-**NOTE**: If a WaitGroup is explicitly passed into functions, it should be added by a pointer.
 
 ### What are Channels?
 
@@ -331,8 +202,7 @@ func main() {
 
 func greet(ch chan string) {
 	fmt.Println("Greeter waiting to send greeting!")
-
-	ch <- "Hello Rwitesh"
+	ch <- "Hello vignesh"
 
 	fmt.Println("Greeter completed")
 }
@@ -344,7 +214,7 @@ $ go run main.go
 Greeter waiting to send greeting!
 Greeter completed
 Greeting received
-Hello Rwitesh
+Hello vignesh
 
 ```
 
@@ -739,7 +609,7 @@ func main() {
 
 # variable and make declaration
 
-```
+```go
 // how to create a channel
 package main
 
@@ -976,6 +846,129 @@ Channel Close  false
 </aside>
 
 <aside>
+
+
+# Old Data's 
+
+Let's see a simple code snippet:
+
+```
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	go helloworld()
+	go goodbye()
+}
+
+func helloworld() {
+	fmt.Println("Hello World!")
+}
+
+func goodbye() {
+	fmt.Println("Good Bye!")
+}
+
+```
+
+Output
+
+```
+$ go run HelloWorld.go
+
+$
+
+```
+
+If we run the above program, it doesn't print anything. This is because the main function got terminated as soon as those two goroutines started executing. So, we can use `Sleep` which pauses the execution of the main function. It looks like this:
+
+```
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	go helloworld()
+	go goodbye()
+	time.Sleep(2 * time.Second)
+}
+
+func helloworld() {
+	fmt.Println("Hello World!")
+}
+
+func goodbye() {
+	fmt.Println("Good Bye!")
+}
+
+```
+
+Here's the output:
+
+```
+$ go run HelloWorld.go
+Good Bye!
+Hello World!
+
+```
+
+Here, the `main` function was blocked for 2 seconds and all the goroutines were executed successfully.
+
+Blocking the method for 2 seconds might not create any problems. But at the production level, where each millisecond is vital, millions of concurrent requests can create a huge problem.
+
+You can solve this problem using **sync.WaitGroup** like this:
+
+```
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go helloworld(&wg)
+	go goodbye(&wg)
+	wg.Wait()
+}
+
+func helloworld(wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("Hello World!")
+}
+
+func goodbye(wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("Good Bye!")
+}
+
+```
+
+Output
+
+```
+$ go run HelloWorld.go
+Good Bye!
+Hello World!
+
+```
+
+The output is the same as the previous one, but it doesn't block the `main` for 2 seconds.
+
+1. `wg.Add(int)`: This method indicates the number of goroutines to wait. In the above code, I have provided 2 for 2 different goroutines. Hence the internal counter wait becomes 2.
+2. `wg.Wait()`: This method blocks the execution of code until the internal counter becomes 0.
+3. `wg.Done()`: This will reduce the internal counter value by 1.
+
+**NOTE**: If a WaitGroup is explicitly passed into functions, it should be added by a pointer.
+
 ♻️ Resources
 
 - Why do we give sender value into the Goroutine.
