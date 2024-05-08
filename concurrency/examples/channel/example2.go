@@ -5,6 +5,13 @@ import(
 	"fmt"
 )
 
+func Get(ch chan string){
+      ch <- "Hello"
+}
+
 func main(){
-    my
+    mychannel := make(chan string)
+    go Get(mychannel)
+	result := <- mychannel
+	fmt.Println("Result :",result)
 }

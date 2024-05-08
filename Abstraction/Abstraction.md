@@ -1,3 +1,23 @@
+# Explanation - 1
+
+- Reference [link](https://www.youtube.com/watch?v=CRY4_-p5FgM&ab_channel=KantanCoding)
+
+![](abstraction.drawio.svg)
+---
+![](img/abstraction.jpeg)
+
+[Example](example/main.go)
+
+- Thing `vm` is third-party package we're going to use in our project.
+- We don't need to know about How they implemented that functionlity we just need to know
+  How to work with for getting deseried result we want.
+- **EXample** : `fmt` package in Golang we don't know What inside that package and how they implemented
+   all functionlitys.
+    - we Know what to call for printing that data,that's it all implementations are abstracted away from us.
+    - we know what to give and what will get as a return value,that's it.
+
+# Explanation - 2
+
 - Abstraction in Go allows to hide the implementation details of a program and expose only the necessary information to the user.
 - It is achieved by using interfaces which define the methods a struct should have.
 - This allows the program to work with any struct that implements the interface, regardless of its specific type.
@@ -8,7 +28,7 @@ package main
 import "fmt"
 
 // Shape is an interface that defines the methods a shape should have.
-type Shape interface {
+type Shape interface { 
     area() float64
 }
 

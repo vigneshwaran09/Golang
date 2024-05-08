@@ -140,37 +140,35 @@ Good Bye!
 ```
 - But this way is not a proper way for sync our goroutine with main goroutine because we couldn't tell accurate processing time for all goroutine function in time.Sleep,some will take too long or some will take too small.
 
-### What are WaitGroups?
-
-You can use WaitGroups to wait for multiple goroutines to finish. A WaitGroup blocks the execution of a function until its internal counter becomes 0.
-
 ### What are Channels?
 
-In concurrent programming, Go provides channels that you can use for bidirectional communication between goroutines.
+![**As shown in the image**](img/Untitled-Diagram46.jpg)
 
-Bidirectional communication means that one goroutine will send a message and the other will read it. Sends and receives are blocking. Code execution will be stopped until the write and read are done successfully.
-
-Channels are one of the more convenient ways to send and receive notifications.
+- Go provides **channels** that you can use for bidirectional communication between goroutines.
+- Bidirectional communication means that one goroutine will send a message and the other will read it. <mark>Sends and receives are blocking</mark>. Code execution will be stopped until the write and read are done successfully.
 
 There are a couple different types of channels:
 
-**Unbuffered channel**: Unbuffered channels require both the sender and receiver to be present to be successful operations. It requires a goroutine to read the data, otherwise, it will lead to deadlock. By default, channels are unbuffered.
+- **Unbuffered channel**: Unbuffered channels require both the sender and receiver to be present to be successful operations. It requires a goroutine to read the data, otherwise, it will lead to deadlock. By default, channels are unbuffered.
 
-**Buffered channel**: Buffered channels have the capacity to store values for future processing. The sender is not blocked until it becomes full and it doesn't necessarily need a reader to complete the synchronization with every operation.
+- **Buffered channel**: Buffered channels have the capacity to store values for future processing. The sender is not blocked until it becomes full and it doesn't necessarily need a reader to complete the synchronization with every operation.
 
-If a space in the array is available, the sender can send its value to the channel and complete its send operation immediately.
+  - If a space in the array is available, the sender can send its value to the channel and complete its send operation immediately.
 
-After its execution, if a receiver comes, the channel will start sending values to the receiver and it will start its operation once it receives the values. As the sender and receiver are operating at different times, this is called `asynchronous communication`.
+  - After its execution, if a receiver comes, the channel will start sending values to the receiver and it will start its operation once it receives the values. As the sender and receiver are operating at different times, this is called `asynchronous communication`.
 
-Here's an example:
+### Creating a Channel
 
-```
+- A channel is created using **chan** keyword
+- It can only transfer data of the same type, different types of data are not allowed to transport from the same channel.
+
+```go
 Syntax to declare a channel
-ch := make(chan Type)
+ch := make(chan Type) // Bidirectional default.
 
 ```
 
-```
+```go
 Declaration of channels based on directions
 1. Bidirectional channel : chan T
 2. Send only channel: chan <- T
@@ -178,9 +176,52 @@ Declaration of channels based on directions
 
 ```
 
-### How to write and read from a channel
+# Difference between declaration of variable and make
+
+```go
+// how to create a channel
+package main
+
+import "fmt"
+
+func main() {
+
+	// Creating a channel
+
+	// Using var keyword
+
+	var mychannel chan int
+ /*
+ # a channel of type int is declared using the var keyword without initializing it.         By default, when a channel is declared without initialization, its value is nil.
+*/
+	fmt.Println("Value of the channel: ", mychannel)
+	fmt.Printf("Type of the channel: %T ", mychannel)
+
+	// Creating a channel using make() function
+
+	mychannel1 := make(chan int)
+/*
+# a channel of type int is created using the make() function. The make() function initializes and returns a new, initialized channel. When you use make(chan int), it creates a new channel and assigns its memory address to the variable mychannel1.
+*/
+	fmt.Println("\nValue of the channel1: ", mychannel1)
+	fmt.Printf("Type of the channel1: %T ", mychannel1)
+
+}
+```
+
+**Output:**
 
 ```
+Value of the channel:
+Type of the channel: chan int
+Value of the channel1:  0x432080
+Type of the channel1: chan int
+
+```
+
+### Bidirectional Channel
+
+```go
 package main
 
 import (
@@ -189,27 +230,22 @@ import (
 )
 
 func main() {
-	msg := make(chan string)
-	go greet(msg)
-	time.Sleep(2 * time.Second)
-
-	greeting := <-msg
-
-	time.Sleep(2 * time.Second)
+	msg := make(chan string) // declaring a channel.
+	go greet(msg) // Goroutine
+	greeting := <-msg // We read here,It will block until someOne send data here.
 	fmt.Println("Greeting received")
 	fmt.Println(greeting)
 }
 
 func greet(ch chan string) {
 	fmt.Println("Greeter waiting to send greeting!")
-	ch <- "Hello vignesh"
-
+	ch <- "Hello vignesh"  // We write here.
 	fmt.Println("Greeter completed")
 }
 
 ```
 
-```
+```go
 $ go run main.go
 Greeter waiting to send greeting!
 Greeter completed
@@ -217,274 +253,6 @@ Greeting received
 Hello vignesh
 
 ```
-
-In the above code snippet, `msg := make(chan string)` is declaring a channel of type string. Then I passed the channel in goroutine greet. `ch <-"Hello Rwitesh"` allows us to write the message to `ch`.
-
-The `ch <-"Hello Rwitesh"` blocks the execution of the goroutine, as no one reads its value written in a channel. So in the `main` goroutine `time.Sleep(2 * time.Second)` terminates the execution without waiting for `greet`.
-
-The second `time.Sleep(2* time.Second)` statement gives us the time to read from the channel. We read from the channel using `<-msg`.
-
-**Closing the channel**: Closing the channel indicates that no more values should be sent on it. We want to show that the work has been completed and there is no need to keep a channel open.
-
-```
-package main
-
-import (
-	"fmt"
-	"time"
-)
-
-func main() {
-	msg := make(chan string)
-	go greet(msg)
-
-	time.Sleep(2 * time.Second)
-
-	greeting := <-msg
-
-	time.Sleep(2 * time.Second)
-	fmt.Println("Greeting received")
-	fmt.Println(greeting)
-
-	_, ok := <-msg
-	if ok {
-		fmt.Println("Channel is open!")
-	} else {
-		fmt.Println("Channel is closed!")
-	}
-}
-
-func greet(ch chan string) {
-	fmt.Println("Greeter waiting to send greeting!")
-
-	ch <- "Hello Rwitesh"
-	close(ch)
-
-	fmt.Println("Greeter completed")
-}
-
-```
-
-We close a channel by using `close()` like `close(ch)` on the above code snippet.
-
-```
-$ go run main.go
-Greeter waiting to send greeting!
-Greeter completed
-Greeting received
-Hello Rwitesh
-Channel is closed!
-
-```
-
-<aside>
-♻️ Here we make a Unbuffered channel then use the channel like a sync.WaitGroup
-
-```go
-package main
-
-import (
-	"fmt"
-)
-
-var count int
-
-func PrintData(i int, ch chan int) {
-	fmt.Println(i)
-	ch <- 1
-}
-
-func main() {
-	ch := make(chan int)
-	for i := 1; i <= 5; i++ {
-		go PrintData(i, ch)
-	}
-	<-ch // This act like a sync.WaitGroup
-	<-ch
-	<-ch
-	<-ch
-	<-ch
-}
-```
-
-- Channnel are synchronised one when we put a channel which will waiting for other end either it would be receiver or sender.
-- Here we put a Receiver channel so every channel make main goroutine to wait until their respective channel come,Here we make five receiver so it wait for five sender to send a value.
-</aside>
-
-<aside>
-♻️ Unbuffered Channel Without Blocking But not getting error
-
-```go
-package main
-
-import (
-	"fmt"
-)
-var count int
-func PrintData(i int, ch chan int,done chan bool) {
-	defer func(){count+=1}()
-	ch <- 1
-	fmt.Println(i)
-	if count == 5{
-		fmt.Println(count)
-	  done<-true
-	}
-}
-
-func main() {
-	ch := make(chan int)
-	done := make(chan bool)
-	for i := 1; i <= 5; i++ {
-		go PrintData(i, ch,done)
-	}
-	<-ch
-	<-ch
-	<-ch
-	<-ch
-	<-ch
-}
-```
-
-</aside>
-
-<aside>
-♻️ Buffer Channel
-
-### Parent File
-
-```go
-package main
-
-func main() {
-	// WithoutGoroutineInUnBufferedChan() // Error
-	// WithGoroutineInUnBufferedChan() // Errror
-	// WithGoroutineInUnBufferedChanforReceiver() // work but some times give value and some times not. 
-	// SendAndReceive()
-	// EmptyGoroutine()
-	// Interview()
-	// GoroutineMechanism()
-	// FunctionableEmptyGoroutine()
-	// MultipleGoroutine()
-	// SingleGoroutineHoldSenderAndReceiver()
-	ScheduleWorkers()
-}
-```
-
-- It will call every function.
-    
-    ### Stage -> 1
-    
-    > Causing error because of use `channel` without goroutine in "Unbuffered Channel”
-    > 
-    
-    ```go
-    package main
-    
-    import "fmt"
-    
-    func WithoutGoroutineInUnBufferedChan() {
-    	c := make(chan int) // Unbuffered Channel
-    	c <- 17
-    	fmt.Println(<-c)
-    }
-    ```
-    
-    <aside>
-    ♻️ Reason
-    
-    - But the reason we got deadlock is Go runtime or go scheduler detect somehow when we don’t have a respective sender or receiver in our program that will be terminated by go runtime.
-    - The main goroutine wait for the receiver receive a value on `c <- 17` but there’s no receiver at the time because the receiver we made next line once the sender opertion complete then only program execute the next line.
-    </aside>
-    
-
-### Stage → 1
-
-> To know who’s Sender as well as who’s Receiver.
-> 
-
-```go
-package main
-
-import "fmt"
-
-func Sender(ch chan<- int) {
-	value := 42
-	ch <- value // Send value to the channel // Sender
-}
-
-func Receiver(ch <-chan int) {
-	value := <-ch // Receive value from the channel // Receiver
-	fmt.Println("Received:", value)
-}
-
-func SendAndReceive() {
-	ch := make(chan int) // Unbuffered channel
-
-	go Sender(ch)   // Start the sender goroutine
-	Receiver(ch)    // Call the receiver function in the main goroutine
-}
-```
-
-### Stage → 3
-
-> Cause error because sender don’t has receiver at that time when the sender invoke.
-> 
-
-```go
-package main
-
-import "fmt"
-
-func Goroutine(ch chan int) {
-	fmt.Println(<-ch) // receiver
-}
-
-func WithGoroutineInUnBufferedChan() {
-	ch := make(chan int) // Unbuffered Channel
-	ch <- 1 // Sender // there's no receiver till now.
-	go Goroutine(ch)
-}
-```
-
-# Channel
-
-- In Go language, a channel is a medium through which a goroutine communicates with another goroutine and this communication is lock-free. Or in other words, *a channel is a technique which allows to let one goroutine to send data to another goroutine*.
-- By default channel is **bidirectional**, means the goroutines can send or receive data through the same channel.
-
-![**As shown in the image**](img/Untitled-Diagram46.jpg)
-
-**As shown in the image**
-
-### Creating a Channel
-
-- A channel is created using **chan** keyword
-- It can only transfer data of the same type, different types of data are not allowed to transport from the same channel.
-
-<aside>
-👁️ Bidirectional channel
-
-```go
-package main
-
-import "fmt"
-
-func main() {
-    // Creating a bidirectional channel of type string
-    ch := make(chan string)
-
-    // Sending a value into the channel
-    ch <- "Hello, Go!"
-
-    // Receiving the value from the channel
-    message := <-ch
-
-    // Printing the received value
-    fmt.Println(message)
-}
-```
-
-- In Go, a bidirectional channel refers to a channel that can be used for both sending and receiving values between goroutines. It allows communication and synchronization between goroutines by enabling them to exchange data.
-</aside>
 
 <aside>
 👁️ UniDirectional
@@ -541,318 +309,168 @@ func main() {
 - An unidirectional channel refers to a channel that is restricted to either sending or receiving values. It means that the channel can only be used in one direction, either for sending or for receiving, but not both.
 </aside>
 
-### **Syntax:**
-
-```
-var Channel_name chan Type
-```
+**Closing the channel**: 
+- Closing the channel indicates that no more values should be sent through this channel.
+  - Because we want to show that the work has been completed so there is no need to keep a channel open.
 
 ```go
 package main
 
 import (
 	"fmt"
-	"reflect"
 )
 
 func main() {
-    // create a channel that can hold strings
-    ch := make(chan string) // Unbuffered Channel
-    // start a goroutine that sends "hello" through the channel
-    go func() { // async function
-        ch <- "hello"
-    }()
-    // receive a message from the channel and print it
-    msg := <-ch
-    fmt.Println("msg-type",reflect.TypeOf(msg)) 
-    /*
-    # msg is a string because which got the value from ch [channel]
-    */
-    fmt.Println("ch-type",reflect.TypeOf(ch))
-    fmt.Println(msg) // prints "hello"
+	msg := make(chan string)
+	go greet(msg)
+	/*
+	 - By using below syntax,we can know the channel is open or close by using second variable.
+	 - First variable give value.
+	*/
+	greeting, ok := <-msg
+	if ok {
+		fmt.Println("result :",greeting)
+		fmt.Println("Channel is open!")
+	} else {
+		fmt.Println("Channel is closed!")
+	}
 }
+
+func greet(ch chan string) {
+	fmt.Println("Greeter waiting to send greeting!")
+
+	ch <- "Hello vignesh"
+	close(ch)
+	/*
+	  - In above,we Close the channel means there's no more value can send through this channel
+	    but we can read from this channel even after closing also too.
+	*/
+
+	fmt.Println("Greeter completed")
+}
+
 ```
 
-### **Syntax:**
+We close a channel by using `close()` like `close(ch)` on the above code snippet.
 
-```
-channel_name:= make(chan Type)
+```go
+$ go run main.go
+Greeter waiting to send greeting!
+Greeter completed
+result : Hello vignesh
+Channel is open!
 ```
 
-# How to create a channel
+<aside>
+♻️ Here we make a Unbuffered channel then use the channel like a sync.WaitGroup
 
 ```go
 package main
 
 import (
 	"fmt"
-	"reflect"
 )
 
-func main() {
-    // create a channel that can hold strings
-    ch := make(chan string) // Buffered Channel
-    // start a goroutine that sends "hello" through the channel
-    go func() { // async function
-        ch <- "hello"
-    }()
-    // receive a message from the channel and print it
-    msg := <-ch
-    fmt.Println("msg-type",reflect.TypeOf(msg)) 
-    /*
-    # msg is a string because which got the value from ch [channel]
-    */
-    fmt.Println("ch-type",reflect.TypeOf(ch))
-    fmt.Println(msg) // prints "hello"
-}
-```
+var count int
 
-# variable and make declaration
-
-```go
-// how to create a channel
-package main
-
-import "fmt"
-
-func main() {
-
-	// Creating a channel
-
-	// Using var keyword
-
-	var mychannel chan int
- /*
- # a channel of type int is declared using the var keyword without initializing it.         By default, when a channel is declared without initialization, its value is nil.
-*/
-	fmt.Println("Value of the channel: ", mychannel)
-	fmt.Printf("Type of the channel: %T ", mychannel)
-
-	// Creating a channel using make() function
-
-	mychannel1 := make(chan int)
-/*
-# a channel of type int is created using the make() function. The make() function initializes and returns a new, initialized channel. When you use make(chan int), it creates a new channel and assigns its memory address to the variable mychannel1.
-*/
-	fmt.Println("\nValue of the channel1: ", mychannel1)
-	fmt.Printf("Type of the channel1: %T ", mychannel1)
-
-}
-```
-
-**Output:**
-
-```
-Value of the channel:
-Type of the channel: chan int
-Value of the channel1:  0x432080
-Type of the channel1: chan int
-
-```
-
-# why we use `time.asleep`
-
-```go
-package main
-
-import (
-	"fmt"
-	"time"
-)
-
-func greeter(s string) {
-	for i := 0; i < 5; i++ {
-		fmt.Println(s)
-	}
-}
-
-func channel(c chan int, a int, b int) {
-	c <- a + b
+func PrintData(i int, ch chan int) {
+	fmt.Println(i)
+	ch <- 1 // Send
 }
 
 func main() {
-	go greeter("hello")
+	ch := make(chan int) // Unbuffer
 	/*
-		#If we use "go" keyword that function run in separate thread.
-		# when we use "go" keyword control not wait for that function it will exectute 
-		  another separate thread this way we can achieve "Asynchronise" method in golang.
-		#We can achevie asynchronise method through goroutine.
+	 - Defaultly channels are Unbuffer.
 	*/
-	time.Sleep(3 * time.Millisecond)
-	/*
-		Why we use this because if we use "goroutine" it execute separate thread
-		so "main" function not wait for goroutineso that's why we use this "time"
-		pacakge and make that main fuction to wait to complete that "goroutine"
-	*/
-	greeter("world")
-	ch := make(chan int)
-	a1 := 5
-	b1 := 10
-	go channel(ch, a1, b1)
-	/*
-		#you can use "channel" only in "Goroutines"
-	*/
-	Final_cc := <-ch 
-	fmt.Println("After adding Final_cc", Final_cc)
-}
-```
-
-# DeadLock
-
-```go
-package main
-
-func main() {
-	ch := make(chan int)
-	ch <- 2
-}
-```
-
-### Send and Receive Data From a Channel
-
-- The send and receive operation block until another side is not ready by default. It allows goroutine to synchronize with each other without explicit locks or condition variables.
-
-### Closing a Channel
-
-- You can also close a channel with the help of close() function. This is an in-built function and sets a flag which indicates that no more value will send to this channel.
-
-**Syntax:**
-
-```
-close()
-```
-
-You can also close the channel using for range loop. Here, the receiver goroutine can check the channel is open or close 
-
- **syntax**:
-
-```
-ele, ok:= <- Mychannel
-```
-
-- Here, if the value of ok is true which means the channel is open so, read operations can be performed. And if the value of is false which means the channel is closed so, read operations are not going to perform.
-
-**Example:**
-
-```go
-// Go program to illustrate how
-// to close a channel using for
-// range loop and close function
-package main
-
-import "fmt"
-
-// Function
-func myfun(mychnl chan string) {
-
-	for v := 0; v < 4; v++ {
-		mychnl <- "GeeksforGeeks"
+	for i := 1; i <= 5; i++ {
+		go PrintData(i, ch)
 	}
-	close(mychnl)
-}
-
-// Main function
-func main() {
-
-	// Creating a channel
-	c := make(chan string)
-
-	// calling Goroutine
-	go myfun(c)
-
-	// When the value of ok is
-	// set to true means the
-	// channel is open and it
-	// can send or receive data
-	// When the value of ok is set to
-	// false means the channel is closed
-	for {
-		res, ok := <-c
-		if ok == false {
-			fmt.Println("Channel Close ", ok)
-			break
-		}
-		fmt.Println("Channel Open ", res, ok)
-	}
+	<-ch // We read here,It will block until someOne send data here.This act like a sync.WaitGroup
+	<-ch
+	<-ch
+	<-ch
+	<-ch
 }
 ```
 
-**Output:**
-
-```
-Channel Open  GeeksforGeeks true
-Channel Open  GeeksforGeeks true
-Channel Open  GeeksforGeeks true
-Channel Open  GeeksforGeeks true
-Channel Close  false
-
-```
-
-### Important Points
-
-- **Blocking Send and Receive:** In the channel when the data sent to a channel the control is blocked in that send statement until other goroutine reads from that channel. Similarly, when a channel receives data from the goroutine the read statement block until another goroutine statement.
-- **Zero Value Channel:** The zero value of the channel is nil.
-- **For loop in Channel:** A for loop can iterate over the sequential values sent on the channel until it closed.`// Go program to illustrate how topackage main"fmt"func main() {// Using make() function// Anonymous goroutinemychnl <- mychnl <- mychnl <- mychnl <- close(mychnl)// Using for loop` `fmt.Println(res)}`
-    
-    **Syntax:**
-    
-    ```
-    for item := range Chnl {
-         // statements..
-    }
-    
-    ```
-    
-    **Example:**
-    
-    ---
-    
-    **Output:**
-    
-    ```
-    GFG
-    gfg
-    Geeks
-    GeeksforGeeks
-    
-    ```
-    
-- **Length of the Channel:** In channel, you can find the length of the channel using *len() function*. Here, the length indicates the number of value queued in the channel buffer.`// Go program to illustrate how topackage main"fmt"// Main function// Creating a channelmychnl := make(chan string, 4)"GFG""gfg""Geeks""GeeksforGeeks"// Using len() function"Length of the channel is: "}`
-    
-    **Example:**
-    
-    ---
-    
-    **Output:**
-    
-    ```
-    Length of the channel is:  4
-    ```
-    
-- **Capacity of the Channel:** In channel, you can find the capacity of the channel using cap() function. Here, the capacity indicates the size of the buffer.`// Go program to illustrate how topackage main"fmt"func main() {// Using make() functionmychnl <- mychnl <- mychnl <- mychnl <- // Finding the capacity of the channelfmt.Println(, cap(mychnl))`
-    
-    **Example:**
-    
-    ---
-    
-    **Output:**
-    
-    ```
-    Capacity of the channel is:  5
-    ```
-    
-- **Select and case statement in Channel:** In go language, select statement is just like a switch statement without any input parameter. This select statement is used in the channel to perform a single operation out of multiple operations provided by the case block.
-
+- Channnel are synchronised one when we put a channel which will waiting for other end either it would be receiver or sender.
+- Here we put a Receiver channel in `main` function make main goroutine to wait until their respective channel come,Here we make five receiver so it wait for five sender to send a value.
 </aside>
+
+### Channel without goroutine
+
+> Causing error because of use `channel` without goroutine in "Unbuffered Channel”
+> 
+
+```go
+    package main
+    
+    import "fmt"
+    
+    func WithoutGoroutineInUnBufferedChan() {
+    	c := make(chan int) // Unbuffered Channel
+    	c <- 17
+    	fmt.Println(<-c)
+    }
+```    
+<aside>
+    ♻️ Reason
+    
+- But the reason we got deadlock is Go runtime or go scheduler detect somehow when we don’t have a respective sender or receiver in our program that will be terminated by go runtime.
+- The main goroutine wait for the receiver receive a value on `c <- 17` but there’s no receiver at the time because the receiver we made next line once the sender opertion complete then only program execute the next line.
+</aside>
+
+# Select
+
+```go
+
+package main
+
+import (
+	"fmt"
+)
+
+func SendData(ch chan string){
+      ch <- "Hello"
+}
+
+func main(){
+     ch1 := make(chan string)
+	 ch2 := make(chan string)
+
+	 go SendData(ch1)
+
+	 go func(){
+         ch2 <- "Hiiii"
+	 }()
+
+	 select {
+	 case data1 := <-ch1:
+		fmt.Println("Getting data from channel-1 :",data1)
+     case data2 := <-ch2:
+		fmt.Println("Getting data from channel-2 :",data2)
+	 }
+}
+
+```
+
+- We can wait multiple goroutine in select statement if one of the case success then it end the process like a switch statement.
+
+
+
+
+# Old Data
 
 <aside>
 
+### What are WaitGroups?
 
-# Old Data's 
+You can use WaitGroups to wait for multiple goroutines to finish. A WaitGroup blocks the execution of a function until its internal counter becomes 0.
 
 Let's see a simple code snippet:
 
-```
+```go
 package main
 
 import (
@@ -876,16 +494,14 @@ func goodbye() {
 
 Output
 
-```
+```go
 $ go run HelloWorld.go
-
-$
 
 ```
 
 If we run the above program, it doesn't print anything. This is because the main function got terminated as soon as those two goroutines started executing. So, we can use `Sleep` which pauses the execution of the main function. It looks like this:
 
-```
+```go
 package main
 
 import (
@@ -911,7 +527,7 @@ func goodbye() {
 
 Here's the output:
 
-```
+```go
 $ go run HelloWorld.go
 Good Bye!
 Hello World!
@@ -924,7 +540,7 @@ Blocking the method for 2 seconds might not create any problems. But at the prod
 
 You can solve this problem using **sync.WaitGroup** like this:
 
-```
+```go
 package main
 
 import (
@@ -954,7 +570,7 @@ func goodbye(wg *sync.WaitGroup) {
 
 Output
 
-```
+```go
 $ go run HelloWorld.go
 Good Bye!
 Hello World!
@@ -1067,23 +683,6 @@ Here's a simplified overview of how the Go scheduler switches Goroutines:
 
 The Go scheduler continuously repeats these steps, efficiently managing the execution of Goroutines across a pool of OS threads. This allows Go programs to take advantage of multiple cores and handle a large number of concurrent tasks without relying on one-to-one thread-to-Goroutine mappings. The details of the scheduler's implementation and optimizations are continuously evolving as the Go language evolves and as newer versions of Go are released.
 
-<aside>
-📌 Important Concurrency Concepts
-
-- Work Pool
-    
-    [Go Concurrency Pattern: Worker Pool](https://medium.com/code-chasm/go-concurrency-pattern-worker-pool-a437117025b1)
-    
-    [Go by Example: Worker Pools](https://gobyexample.com/worker-pools)
-    
-    [Golang Concurrency — Worker Pool](https://blog.devgenius.io/golang-concurrency-worker-pool-2aff9cbc6255)
-    
-- Summary
-    - **Worker Pool** means we have a lots of **task** to do but we have lesser **amount** of worker only so we make **queue** for that task.
-</aside>
-
-</aside>
-
 
 Thread Vs Goroutine
 
@@ -1169,25 +768,4 @@ Note:
 
 - Goroutines are lightweight, and thousands or even millions of goroutines can be run concurrently on a modern machine with limited memory overhead.
 - The Go runtime automatically schedules goroutines on available cores, so that your program can take full advantage of parallelism on multi-core systems.
-
-# Cocurrency Pattern
-
-![concurrencyPatter](img/concurrencyPatter.webp)
-
-[Go Concurrency Patterns](https://go.dev/talks/2012/concurrency.slide#13)
-
-[Go Concurrency Patterns: Pipelines and cancellation - The Go Programming Language](https://go.dev/blog/pipelines)
-
-[Advanced Concurrency Patterns | Learn Go](https://www.karanpratapsingh.com/courses/go/advanced-concurrency-patterns)
-
-["Beginning Concurrency Patterns" - "Benji Vesterby | Principal Security Software Engineer"](https://benjiv.com/beginning-concurrency-patterns/)
-
-[Google I/O 2012 - Go Concurrency Patterns](https://www.youtube.com/watch?v=f6kdp27TYZs)
-
-[Concurrency is not Parallelism by Rob Pike](https://www.youtube.com/watch?v=oV9rvDllKEg)
-
-
-[Go-concurrency-patterns](https://github.com/lotusirous/go-concurrency-patterns/tree/main/15-bounded-parallelism)
-
-[How To Use Contexts in Go  | DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-use-contexts-in-go)
 
