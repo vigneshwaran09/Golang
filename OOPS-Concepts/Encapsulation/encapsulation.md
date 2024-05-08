@@ -1,9 +1,8 @@
-# What's encapsulation?
+# Encapsulation?
 
-### In Java :
-   
+- In golang,encapsulation accevied in package level by using scope of the variable or method etc.
 
 
-##### Acess Modifier :
-  - If the keyword is **public** means,we can access those data and functions anywhere by using creating object for that class.
-  - If the keyword is  
+# Naming Conventions
+- For `Set` it should be **Set{Name of field}**.
+- For `Get` it should be **Get{Name of field}**

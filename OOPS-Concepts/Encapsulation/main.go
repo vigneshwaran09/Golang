@@ -2,20 +2,16 @@ package main
 
 import (
 	"fmt"
-	en "encapsulation/packOne"
+	dt "encapsulation/dto"
 )
 
-func main(){
-
-	/*
-    person1 := en.Person{"vicky",100}
-	fmt.Println("person1 :",person1)
-
-	// This one Getting error.
-
-	*/ 
-	
-	person2 := en.Person{"vicky",100}
-	fmt.Println("person2 :",person2)
-
+func main(){	
+	personClass := dt.NewPerson("vignesh","waran",19)
+	fmt.Println("personClass :",personClass)
+    personClass.SetfirstName("vicky")
+	personClass.SetlastName("k")
+	personClass.SetrollNo(07)
+	fmt.Println("Get First-name :",personClass.GetfirstName())
+	fmt.Println("Get Last-name :",personClass.GetlastName())
+	fmt.Println("Get Roll-No :",personClass.GetrollNo())
 }

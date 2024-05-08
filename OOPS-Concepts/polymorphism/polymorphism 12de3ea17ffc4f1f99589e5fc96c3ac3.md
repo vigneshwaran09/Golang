@@ -82,7 +82,7 @@ func main() {
 
 - How it's a polymorphism?
     - poly-"many",morp-"forms".
-    - we Implement the "method signature" which type is implement that method that can change his behaviour so that's why.
+    - we Implement the "method signature" which type is implement that method that can change his behaviour based on the **struct** implementation so that's why.
 </aside>
 
 <aside>

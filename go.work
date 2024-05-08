@@ -1,9 +1,14 @@
 go 1.22.1
 
 use (
-	./Abstraction/example
-	./closure
-	./firstClassFunction
-	./higherOrderFunction
-	./referenceDataTypes
+	./OOPS-Concepts/Abstraction/example
+	./OOPS-Concepts/Encapsulation
+	./OOPS-Concepts/comparable
+	./OOPS-Concepts/composition/type-1
+	./OOPS-Concepts/composition/type-2
+	./OOPS-Concepts/constructor
+	./advance-concepts/closure
+	./advance-concepts/firstClassFunction
+	./advance-concepts/higherOrderFunction
+	./advance-concepts/receiver-function/example
 )
