@@ -72,8 +72,6 @@ Thread Vs Goroutine
 
 [What is the difference between concurrency and parallelism?](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism)
 
-[What is the difference between concurrency and parallelism?](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism)
-
 [Blob-Master](https://github.com/Criviere/os/blob/master/Chapter4.md)
 
 </aside>
