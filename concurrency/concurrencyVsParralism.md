@@ -144,3 +144,11 @@ Note:
 - Goroutines are lightweight, and thousands or even millions of goroutines can be run concurrently on a modern machine with limited memory overhead.
 - The Go runtime automatically schedules goroutines on available cores, so that your program can take full advantage of parallelism on multi-core systems.
 
+# Just a quick summary :
+[reference1](https://youtu.be/w3z4_aksN5s?si=KpVHqNqeIXyFATCW)
+[reference2](https://youtu.be/r2__Rw8vu1M?si=KYmpZZjwY1cbgfwc)
+[reference3](https://youtu.be/oV9rvDllKEg?si=FvbU8XfEvY0W9Rpf)
+[reference4](https://youtu.be/olYdb0DdGtM?si=rmBPlNHOrFgnMTOu)
+- We can't achieve parallism in single-processor with single core.
+- But we can achieve parallism in single-processor with multicore core.
+- We can also achieve parallism in multiple-processorx.
