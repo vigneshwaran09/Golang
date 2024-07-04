@@ -1,5 +1,3 @@
-# make vs new
-
 # Make VS new
 
 <aside>
