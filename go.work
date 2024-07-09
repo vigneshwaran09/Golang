@@ -11,4 +11,7 @@ use (
 	./advance-concepts/firstClassFunction
 	./advance-concepts/higherOrderFunction
 	./advance-concepts/receiver-function/example
+	./concurrency/reddit/problem1
+	./concurrency/reddit/problem2
+	./concurrency/reddit/problem3
 )

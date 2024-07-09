@@ -99,8 +99,8 @@ import(
 )
 
 func main()  {
-	v := make([]int,0) // Initialize a slice with length 1
-	v = append(v, 1)
+	v := make([]int,0) 
+	v = append(v, 1) // Dynamically memory expanding
 	fmt.Println("v", v)
 }
 ```

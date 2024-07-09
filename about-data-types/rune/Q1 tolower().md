@@ -16,7 +16,7 @@ Topics: Intermediate DSA : Strings (https://www.notion.so/Intermediate-DSA-Strin
 In this Blog he told to us why we use UTF-8,Unicode character.
 
 <aside>
-🧘🏿‍♂️ **Based on above article**
+🧘🏿‍♂️ Based on above article
 
 - why we put **content type** and **meta tag** in our html page because then only the browser can understand which encoding which will use to render this page.
 - Example

@@ -340,3 +340,12 @@ of time.<br>
 >        /home/vigneswaran/Documents/software/git/advance_golang_concepts/concurrency/book/Katherine_Cox_Buday/chapter-1/Why_Is_Concurrency_Hard/Livelock/timeTick.go:11 +0x8a
 >exit status 2
 >```
+
+**Not Completed Above things have to check**
+
+## Chapter - 3
+
+### Go’s Concurrency Building Blocks
+
+- Every program in Go has at least one goroutine: the main routine.
+- A goroutine is a function that is running concurrently (remember: not necessarily in parallel!) alongside other code.
