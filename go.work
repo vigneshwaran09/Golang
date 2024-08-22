@@ -3,7 +3,6 @@ go 1.22.1
 use (
 	./OOPS-Concepts/Abstraction/example
 	./OOPS-Concepts/Encapsulation
-	./OOPS-Concepts/comparable
 	./OOPS-Concepts/composition/type-1
 	./OOPS-Concepts/composition/type-2
 	./OOPS-Concepts/constructor
@@ -11,7 +10,7 @@ use (
 	./advance-concepts/firstClassFunction
 	./advance-concepts/higherOrderFunction
 	./advance-concepts/receiver-function/example
-	./concurrency/reddit/problem1
-	./concurrency/reddit/problem2
-	./concurrency/reddit/problem3
+	./concurrency/problems/reddit/problem1
+	./concurrency/problems/reddit/problem2
+	./concurrency/problems/reddit/problem3
 )

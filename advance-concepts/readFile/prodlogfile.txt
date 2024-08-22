@@ -1,0 +1,6 @@
+2024-07-07 10:00:00 error Failed to connect to database
+2024-07-07 10:05:00 normal User login successful
+2024-07-07 10:10:00 success Backup completed successfully
+2024-07-07 10:15:00 error Disk space low
+2024-07-07 10:20:00 normal File uploaded
+2024-07-07 10:25:00 success Email sent

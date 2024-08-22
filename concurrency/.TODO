@@ -3,8 +3,12 @@
 - Kantan Coding youtube Channel concurrency video need to see from 2 to 4,1 finished.
 -  Mario Carrion youtube Channel concurrency playlist all video need to see.
 <br>
+
 [Refere this github page](https://github.com/joaocgduarte/concurrency-in-go?tab=readme-ov-file#repeat)
 <br>
+
 [Refere the github page](https://github.com/kat-co/concurrency-in-go-src)
+
+[Go-concurrency-patterns](https://github.com/lotusirous/go-concurrency-patterns/tree/main/15-bounded-parallelism)
 - Concurrency in Go by Katherine Cox-Buday should complete this book after sometime when i got free time
   right now know one will ask this in interview.

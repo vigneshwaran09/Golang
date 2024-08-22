@@ -1,59 +1,22 @@
-# Katherine_Cox_Buday
+# Chapter - 1
 
-## Chapter - 1
+## Why Is Concurrency Hard?
+ 1) you can use the **go** keyword to run a function concurrently. Doing so creates what’s called a **goroutine**.
 
-### Why Is Concurrency Hard?
- 1) When 2 or more operations must execute in the correct order, but the program has not been written so you have no guarantees that your code will run in the order it’s listed in the source code then we will get a **Race condition**.
- 3) you can use the **go** keyword to run a function concurrently. Doing so creates what’s called a **goroutine**.
-
-#### Race Conditions :
+### Race Conditions :
 1) **Data Race**
-> **sample-1 :** <mark>Data Race</mark>
->
-> 
-> ```go
-> package main
-> 
-> import(
->     "fmt"
-> )
-> 
-> func main(){
->     var data int
->     go func() {
->     data++
-> }()
-> if data == 0 {
-> fmt.Printf("the value is %v.\n", data)
-> }
-> }
-> ```
+> <mark>Data Race</mark><br>
+> [**sample-1**](/concurrency/book/Katherine_Cox_Buday/chapter-1/Why_Is_Concurrency_Hard/Race_Conditions/data_race.go)
 > - What’s called a data race, where one concurrent
 operation attempts to read a variable while at same time another concurrent operation is attempting to write to the same variable.
 >
-> - It shows up as a data race, when two threads are competing for the same variable or resource.
+> - It shows up as a **data race**, when two threads are competing for the same variable or resource.
 
-> **sample-2 :** <mark>time.Sleep</mark>
-> ```go
-> package main
->
-> import(
->	"fmt"
->	"time"
-> )
->
->func main(){
->	var data int
->   go func() { data++ }()
->    time.Sleep(1*time.Second) // This is bad!
->    if data == 0 {
->        fmt.Printf("the value is %v.\n", data)
->    }
-> }
-> ```
+> <mark>time.Sleep</mark><br>
+> [**sample-2**](/concurrency/book/Katherine_Cox_Buday/chapter-1/Why_Is_Concurrency_Hard/Race_Conditions/data_race_with_timeSleep.go)
 > - **time.sleep** is not a proper way to prevent the **race condition** because we don'know concurrency function how long will it take so **time.sleep** a temporary solution.
 
-#### Atomicity :
+### Atomicity :
 - In Go atomic operations,are operations that are desgined to be exectuted without interruption and without interference from other concurrenct operation.
 > [Reference blog](https://medium.com/@hatronix/go-go-lockless-techniques-for-managing-state-and-synchronization-5398370c379b#:~:text=Atomic%20operations%20are%20a%20crucial,efficient%20and%20reliable%20concurrent%20code.) 
 >
@@ -115,12 +78,12 @@ avoiding the need for traditional looking mechanisms.
 > - It's important to note that atomic operations have their limitations,they are best suite for simple,low-level on primitive data types.if
 you need to perform more complex operations that involve multiple variable or require more complex synchronization,you may still need to
 use mutexes or other synchronizations primitives.
-> ###### Summary
+> ##### Summary
 > 1) Atomic also same as mutex but for simple opeartions atomic is more efficient than mutex.
 > 2) When one goroutine doing process on shared memory (variable) another one is wait for the process done
 then it will do his process on shared variable.
 
-#### Memory Access Synchronization :
+### Memory Access Synchronization :
 >  ```go
 >   package main
 >
@@ -162,15 +125,15 @@ of time.<br>
 > 1) Are my critical sections entered and exited repeatedly? ( If yes then we should considered for performance issue in our code. ) <br>
 > 2) What size should my critical sections be? ( The more will grow,it will do less performance. )<br>
 > - Answering these two questions in the context of your program is an art, and this adds to the difficulty in synchronizing access to the memory.
-> ###### Summary
+> ##### Summary
 > - When there is a data race, we can wrap that critical section (when we need exclusive access to a shared resource) with a mutex, locking and unlocking the mutex. When we do this, we are synchronising memory access.
 > - This fixes the data race, but it doesn't fix the race condition (threads still compete for first write/read).
 > - It can create maintenance and performance problems. We should try to keep them only to critical sections. If it gets inefficient, make them broader.
 > - We should use `Lock` and `UnLock` where we try to read and write on shared memory (Variable). 
 
-#### Deadlocks, Livelocks, and Starvation :
+### Deadlocks, Livelocks, and Starvation :
 
-##### Deadlock : 
+#### Deadlock : 
 >```go
 >package main
 >
@@ -252,7 +215,7 @@ of time.<br>
 > - mutex normally wait for another theard complete the process on the shared memory.
 > - Here both are wait forever (infinity) so we get deadlock.
 > - The `go runtime` would find all thread waiting so long somehow then gave a deadlock.
-> ###### Summary
+> ##### Summary
 > - Happens when a shared mutex is locked twice. by two different routines.
 > - **Coffman Conditions help identity when we have a deadlock:**
 >> 1) Mutual exclusions - A concurrent process holds exclusive rights to a resource at any one time.
@@ -263,8 +226,8 @@ of time.<br>
 >> ![](Katherine_Cox_Buday/img/sharedMemory.png)
 >> ![](Katherine_Cox_Buday/img//deadlockcircle.png)
 
-##### Livelocks :
-###### time.Tick()
+#### Livelocks :
+##### time.Tick()
 > **Syntax :**
  >> `func Tick(d Duration) <- chan Time` 
  >> - <mark>d</mark> is the duration of time for ticker to tick.
@@ -340,12 +303,3 @@ of time.<br>
 >        /home/vigneswaran/Documents/software/git/advance_golang_concepts/concurrency/book/Katherine_Cox_Buday/chapter-1/Why_Is_Concurrency_Hard/Livelock/timeTick.go:11 +0x8a
 >exit status 2
 >```
-
-**Not Completed Above things have to check**
-
-## Chapter - 3
-
-### Go’s Concurrency Building Blocks
-
-- Every program in Go has at least one goroutine: the main routine.
-- A goroutine is a function that is running concurrently (remember: not necessarily in parallel!) alongside other code.
